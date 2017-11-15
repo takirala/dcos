@@ -2,8 +2,8 @@
   "requires": ["dcos-image-deps"],
   "single_source" : {
     "kind": "git",
-    "git": "https://github.com/dcos/dcos-test-utils.git",
-    "ref": "90d9c23b75cbb56d8d24a44d7667d713d1e7b2e1",
-    "ref_origin": "master"
+    "git": "https://github.com/takirala/dcos-test-utils.git",
+    "ref": "e2ce6198acf68d792c16618bad624b7352e1bcb4",
+    "ref_origin": "test-new-cli"
   }
 }
