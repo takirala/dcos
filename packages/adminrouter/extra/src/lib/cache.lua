@@ -418,7 +418,10 @@ local function fetch_and_store_state_mesos(auth_token)
     for _, framework in ipairs(raw_state_summary["frameworks"]) do
         local f_id = framework["id"]
         local f_name = util.normalize_service_name(framework["name"])
-
+        
+        ngx.log(ngx.WARN, "jenkins: parsing f_name" .. f_name)
+        ngx.log(ngx.WARN, "jenkins: parsing f_id" .. f_id)
+ 
         parsed_state_summary['f_by_id'][f_id] = {}
         parsed_state_summary['f_by_id'][f_id]['webui_url'] = framework["webui_url"]
         parsed_state_summary['f_by_id'][f_id]['name'] = f_name

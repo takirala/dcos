@@ -176,6 +176,9 @@ local function resolve_via_mesos_dns(service_name)
     --    or not, `nil` if there was an error.
     --  - err_code, err_text - if an error occurred these will be HTTP status
     --    and error text that should be sent to the client. `nil` otherwise
+    
+    ngx.log(ngx.NOTICE, "jenkins: should not search here")
+
     upstream_scheme, upstream_url, err_code, err_text = upstream_url_from_srv_query(
         service_name)
 
@@ -212,35 +215,49 @@ local function resolve_via_mesos_state(service_name, mesos_cache)
     --    and error text that should be sent to the client. `nil` otherwise
     local webui_url = nil
     local service_name_bymesos = nil
+    
+    ngx.log(ngx.NOTICE, "jenkins: trying to resolve_via_mesos_state")
 
     if mesos_cache == nil then
         return nil, ngx.HTTP_SERVICE_UNAVAILABLE, "503 Service Unavailable: invalid Mesos state cache"
     end
 
+    ngx.log(ngx.NOTICE, "jenkins: trying to resolve_via_mesos_state........")
+
     -- Even though frameworks will be resolved much more often using their name
     -- than ID, we cannot optimize this and change the order as we may break
     -- services/software relying on that.
     if mesos_cache['f_by_id'][service_name] ~= nil then
+        ngx.log(ngx.NOTICE, "jenkins: if - then")
         webui_url = mesos_cache['f_by_id'][service_name]['webui_url']
         -- This effectively resolves framework ID into human-friendly service
         -- name.
         service_name = mesos_cache['f_by_id'][service_name]['name']
     elseif mesos_cache['f_by_name'][service_name] ~= nil then
+        ngx.log(ngx.NOTICE, "jenkins: if elseif")
         webui_url = mesos_cache['f_by_name'][service_name]['webui_url']
     end
 
+    ngx.log(ngx.NOTICE, "jenkins: webui_url is empty ?")
+
     if webui_url == nil then
+        ngx.log(ngx.NOTICE, "jenkins: bad AR")
         return false, nil, nil
     end
 
     if webui_url == "" then
+        ngx.log(ngx.NOTICE, "jenkins: should never reach!")
         return resolve_via_mesos_dns(service_name)
     end
+   
+    ngx.log(ngx.NOTICE, "jenkins: webui url is not empty!")
 
     local parsed_webui_url = url.parse(webui_url)
     if parsed_webui_url.path == "/" then
         parsed_webui_url.path = ""
     end
+
+    ngx.log(ngx.NOTICE, "jenkins: parsed_url success!!")
 
     ngx.log(ngx.NOTICE, "Resolved via Mesos state-summary, service id: `".. service_name .. "`")
     ngx.var.upstream_url = parsed_webui_url:build()
